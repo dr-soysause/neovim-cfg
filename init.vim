@@ -3,11 +3,14 @@
 "setup vim-plug
 call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-surround'
+Plug 'scrooloose/nerdtree'
+
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'L3MON4D3/LuaSnip'
+
 Plug 'morhetz/gruvbox'
 call plug#end()
 
@@ -24,6 +27,13 @@ set expandtab
 set autoindent
 set fileformat=unix
 
+"Start NERDTree. If a file is specified, move the cursor to its window.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * NERDTree | if argc() > 0 || exists("s:std_in") | wincmd p | endif
+
+"Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
 "load filetype-specific indent files
 filetype indent on
 
@@ -35,7 +45,15 @@ nnoremap ,<space> :nohlsearch<CR>
 
 "color theme
 let g:gruvbox_italic=1
-colorscheme gruvbox    
+colorscheme gruvbox
+if (empty($TMUX))
+  if (has("nvim"))
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
 
 "lenght column
 set colorcolumn=90
